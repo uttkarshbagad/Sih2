@@ -2,7 +2,21 @@
 
 ### *Block / Village Scale AI Decision Support for Climate-Resilient Agriculture (MoES / NCMRWF — SIH 2026)*
 
+**Based on [kaku-coder/hyperlocal-monsoon-intelligence](https://github.com/kaku-coder/hyperlocal-monsoon-intelligence) (MIT License)**
+
 ![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white) ![Tailwind](https://img.shields.io/badge/TailwindCSS-3-06B6D4?logo=tailwindcss&logoColor=white) ![Node.js](https://img.shields.io/badge/Node.js-18-339933?logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?logo=fastapi&logoColor=white) ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white) ![SerpApi](https://img.shields.io/badge/SerpApi-Live_Google_Search-4285F4?logo=google&logoColor=white) ![Tavily](https://img.shields.io/badge/Tavily-AI_Web_Intelligence-00C7FF?logo=openai&logoColor=white) ![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?logo=leaflet&logoColor=white) ![Docs](https://img.shields.io/badge/Docs-Updated-blue) ![License](https://img.shields.io/badge/License-MIT-green)
+
+---
+
+## 📍 Current Status (as of Phase 1 cleanup)
+
+> **This is a working SIH 2026 prototype** — all three services run and the full UI flows end-to-end.
+> 
+> **What's REAL:** Full-stack architecture (React/Express/FastAPI), 13-page GIS decision UI, live Open-Meteo nowcast, ENSO/IOD climate indices from NOAA PSL, multilingual EN/HI/OR with TTS, SHAP-style explainability, SMS broadcast simulation.
+> 
+> **What's SIMULATED (labeled as such in UI/API):** ML models are heuristic (not trained on real data), weather/GIS data is in-memory mock, no live MongoDB, broadcast is simulated, no auth.
+> 
+> **Phase 1 cleanup just completed:** Fixed `.gitignore`, removed build artifacts from tracking, added `.env.example` files, updated attribution.
 
 ---
 

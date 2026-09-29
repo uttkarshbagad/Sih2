@@ -4,9 +4,49 @@
 # Environment Variables
 **/.env
 **/.env.local
+**/.env.*.local
 
 # Build Outputs
 **/dist/
+**/build/
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+*.so
+
+# Data & Model Files (large)
+**/data/processed/
+**/data/raw/
+**/models/
+**/*.parquet
+**/*.nc
+**/*.pbf
+**/*.osm
+**/*.geojson
 
 # Logs & Temporary Files
 *.log
+*.tmp
+*.temp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+**/.pytest_cache/
+**/.coverage
+**/htmlcov/
+
+# Jupyter
+*.ipynb_checkpoints/
