@@ -1,0 +1,28 @@
+# Label Definitions - All Thresholds in One Config
+# ASSUMPTION: These are standard-style agronomic defaults for prototype.
+# NOT official MoES/IMD definitions. Review by domain experts required.
+
+# Rainfall thresholds
+dry_day_mm: 1.0              # Day with < 1mm considered dry
+break_dry_thresh_mm: 2.5     # Break spell: daily rain < 2.5mm (IMD "rainy day" threshold)
+
+# Break / Dry Spell Definition
+break_min_days: 5            # Minimum consecutive dry days for a break
+break_window_start: "06-15"  # Break detection active from June 15
+break_window_end: "09-15"    # Break detection active until September 15
+
+# Monsoon Onset Definition
+onset_search_start: "05-01"  # Start searching for onset from May 1
+onset_window_days: 3         # Onset = 3-day window
+onset_cum_mm: 20.0           # Cumulative rainfall threshold (mm) over window
+
+# False Onset Definition
+false_onset_check_days: 20   # Monitor for 20 days after detected onset
+false_onset_dry_run_days: 7  # False onset if >=7 consecutive dry days in check period
+
+# Target leads (for modeling)
+lead_weeks: [1, 2]           # Week 1 (days 1-7), Week 2 (days 8-14)
+
+# Spatial configuration
+spatial_unit: "imd_grid"     # Options: "osm_blocks", "imd_grid", "districts"
+spatial_label: "IMD 0.25° grid cell"  # Human-readable label for API/UI
