@@ -159,7 +159,6 @@ class MonsoonExplainer:
             f"(+{dominant.contribution_percent}%). Counterfactual: {cf['message']} "
             f"Baseline climatology 25%; model delta +{int((base_break-0.25)*100)}%."
         )
-        # attach extra as disclaimer-adjacent? keep schema compatible, stash in summary
         return ExplainabilityResponse(
             status="success", target_metric="Break / Dry Spell Risk",
             target_probability=base_break, base_probability=0.25,
@@ -167,6 +166,7 @@ class MonsoonExplainer:
             dominant_driver=dominant.label,
             explanation_summary=summary,
             is_prototype=True,
+            model_mode=predictor.model_mode,
         )
 
     def explain_advanced(self, req: PredictionRequest) -> Dict[str, Any]:

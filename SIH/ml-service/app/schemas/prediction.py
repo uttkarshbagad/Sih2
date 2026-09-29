@@ -35,6 +35,11 @@ class PredictionResponse(BaseModel):
     primary_risk_factor: str
     is_prototype: bool = True
     disclaimer: str = "Simulated probabilistic model for hackathon prototype demonstration."
+    # Optional fields for trained model mode
+    model_mode: Optional[str] = Field(None, description="Model mode: 'heuristic' or 'trained'")
+    model_version_detail: Optional[str] = Field(None, description="Detailed model version (git commit, train date)")
+    calibration_applied: Optional[bool] = Field(None, description="Whether calibration was applied")
+    data_as_of: Optional[str] = Field(None, description="Date of most recent training data")
 
 class FeatureContribution(BaseModel):
     feature: str
@@ -52,6 +57,11 @@ class ExplainabilityResponse(BaseModel):
     dominant_driver: str
     explanation_summary: str
     is_prototype: bool = True
+    # Optional fields for trained model mode
+    model_mode: Optional[str] = Field(None, description="Model mode: 'heuristic' or 'trained'")
+    model_version_detail: Optional[str] = Field(None, description="Detailed model version")
+    calibration_applied: Optional[bool] = Field(None, description="Whether calibration was applied")
+    data_as_of: Optional[str] = Field(None, description="Date of most recent training data")
 
 
 class NowcastRequest(BaseModel):
