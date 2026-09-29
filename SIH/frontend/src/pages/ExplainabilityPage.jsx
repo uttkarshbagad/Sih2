@@ -28,6 +28,14 @@ export const ExplainabilityPage = () => {
   const [explainData, setExplainData] = useState(null);
   const [advData, setAdvData] = useState(null);
   const [mode, setMode] = useState('advanced');
+  const [modelMode, setModelMode] = useState('heuristic');
+
+  useEffect(() => {
+    fetch('/api/model-card')
+      .then(r => r.json())
+      .then(data => setModelMode(data.model_mode || 'heuristic'))
+      .catch(() => setModelMode('heuristic'));
+  }, []);
 
   useEffect(() => {
     const loadExplanation = async () => {
@@ -82,6 +90,13 @@ export const ExplainabilityPage = () => {
             <h1 className="text-xl sm:text-2xl font-black text-white">
               Explainable AI (XAI) • Why This Prediction?
             </h1>
+            {modelMode && (
+              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                modelMode === 'trained' ? 'bg-emerald-900/50 text-emerald-300 border-emerald-500/40' : 'bg-amber-900/50 text-amber-300 border-amber-500/40'
+              } border`}>
+                {modelMode.toUpperCase()}
+              </span>
+            )}
           </div>
           <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5 text-sky-400" />

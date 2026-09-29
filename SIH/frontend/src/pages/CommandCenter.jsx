@@ -35,6 +35,14 @@ export const CommandCenter = () => {
     setActiveTab,
     farmerLanguage
   } = useApp();
+  const [modelMode, setModelMode] = useState('heuristic');
+
+  useEffect(() => {
+    fetch('/api/model-card')
+      .then(r => r.json())
+      .then(data => setModelMode(data.model_mode || 'heuristic'))
+      .catch(() => setModelMode('heuristic'));
+  }, []);
 
   const t = translations[farmerLanguage] || translations.en;
   const [alerts, setAlerts] = useState([]);
@@ -81,6 +89,13 @@ export const CommandCenter = () => {
             <span className="bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
               {t.cmdBadge}
             </span>
+            {modelMode && (
+              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                modelMode === 'trained' ? 'bg-emerald-900/50 text-emerald-300 border-emerald-500/40' : 'bg-amber-900/50 text-amber-300 border-amber-500/40'
+              } border`}>
+                {modelMode.toUpperCase()}
+              </span>
+            )}
           </div>
           <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5 text-sky-400" />

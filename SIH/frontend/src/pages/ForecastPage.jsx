@@ -26,37 +26,61 @@ import {
 import { RiskBadge } from '../components/common/RiskBadge';
 
 export const ForecastPage = () => {
-  const { 
+const { 
     selectedDistrict, 
     selectedBlock, 
     forecastHorizon, 
     setForecastHorizon,
     forecastData 
   } = useApp();
-
   const [activeMetric, setActiveMetric] = useState('all');
+  const [modelMode, setModelMode] = useState('heuristic');
 
-  const timelineData = forecastData?.timeline || [
-    { period: "1–7 days", horizon_days: 7, onset: 76, break: 18, heavy_rain: 29, expected_rain: 54, rainfall_probability: 78, status: "Favorable Onset" },
-    { period: "8–14 days", horizon_days: 14, onset: 68, break: 68, heavy_rain: 38, expected_rain: 38, rainfall_probability: 44, status: "Dry Break Spell" },
-    { period: "15–21 days", horizon_days: 21, onset: 58, break: 52, heavy_rain: 24, expected_rain: 29, rainfall_probability: 38, status: "Moderate Stress" },
-    { period: "22–30 days", horizon_days: 30, onset: 52, break: 32, heavy_rain: 42, expected_rain: 42, rainfall_probability: 62, status: "Monsoon Recovery" }
+  useEffect(() => {
+    fetch('/api/model-card')
+      .then(r => r.json())
+      .then(data => setModelMode(data.model_mode || 'heuristic'))
+      .catch(() => setModelMode('heuristic'));
+  }, []);
+  const [modelMode, setModelMode] = useState('heuristic');
+
+  useEffect(() => {
+    fetch('/api/model-card')
+      .then(r => r.json())
+      .then(data => setModelMode(data.model_mode || 'heuristic'))
+      .catch(() => setModelMode('heuristic'));
+  }, []);
+
+  const timelineData = forecastData?.timeline || [];
+  const displayTimeline = timelineData.length > 0 ? timelineData : [
+    { period: "1–7 days", horizon_days: 7, onset: 0, break: 0, heavy_rain: 0, expected_rain: 0, rainfall_probability: 0, status: "Loading..." },
+    { period: "8–14 days", horizon_days: 14, onset: 0, break: 0, heavy_rain: 0, expected_rain: 0, rainfall_probability: 0, status: "Loading..." },
+    { period: "15–21 days", horizon_days: 21, onset: 0, break: 0, heavy_rain: 0, expected_rain: 0, rainfall_probability: 0, status: "Loading..." },
+    { period: "22–30 days", horizon_days: 30, onset: 0, break: 0, heavy_rain: 0, expected_rain: 0, rainfall_probability: 0, status: "Loading..." }
   ];
 
   // Daily simulated timeline curve for granular chart
-  const dailyData = [
-    { day: "Day 1", rainProb: 85, expRain: 14, breakRisk: 12, onsetProb: 82, heavyProb: 24, temp: 33.2 },
-    { day: "Day 3", rainProb: 80, expRain: 18, breakRisk: 15, onsetProb: 79, heavyProb: 28, temp: 33.5 },
-    { day: "Day 5", rainProb: 74, expRain: 12, breakRisk: 22, onsetProb: 76, heavyProb: 25, temp: 34.0 },
-    { day: "Day 7", rainProb: 62, expRain: 8, breakRisk: 38, onsetProb: 72, heavyProb: 18, temp: 34.4 },
-    { day: "Day 9", rainProb: 38, expRain: 2, breakRisk: 68, onsetProb: 65, heavyProb: 10, temp: 35.2 },
-    { day: "Day 11", rainProb: 25, expRain: 0, breakRisk: 74, onsetProb: 60, heavyProb: 8, temp: 35.8 },
-    { day: "Day 13", rainProb: 30, expRain: 3, breakRisk: 70, onsetProb: 58, heavyProb: 12, temp: 35.6 },
-    { day: "Day 15", rainProb: 35, expRain: 4, breakRisk: 64, onsetProb: 56, heavyProb: 15, temp: 35.0 },
-    { day: "Day 18", rainProb: 42, expRain: 7, breakRisk: 52, onsetProb: 54, heavyProb: 18, temp: 34.5 },
-    { day: "Day 21", rainProb: 48, expRain: 9, breakRisk: 44, onsetProb: 52, heavyProb: 22, temp: 34.2 },
-    { day: "Day 25", rainProb: 65, expRain: 15, breakRisk: 30, onsetProb: 55, heavyProb: 35, temp: 33.8 },
-    { day: "Day 30", rainProb: 72, expRain: 22, breakRisk: 24, onsetProb: 58, heavyProb: 42, temp: 33.4 }
+  const dailyData = forecastData?.daily_strip ? forecastData.daily_strip.map((d, i) => ({
+    day: d.day,
+    rainProb: d.probability,
+    expRain: d.rain_mm,
+    breakRisk: 0,
+    onsetProb: 0,
+    heavyProb: 0,
+    temp: d.temp_max
+  })) : [
+    { day: "Day 1", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 3", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 5", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 7", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 9", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 11", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 13", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 15", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 18", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 21", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 25", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 },
+    { day: "Day 30", rainProb: 0, expRain: 0, breakRisk: 0, onsetProb: 0, heavyProb: 0, temp: 0 }
   ];
 
   return (
@@ -70,6 +94,13 @@ export const ForecastPage = () => {
             <h1 className="text-xl sm:text-2xl font-black text-white">
               7–30 Day Probabilistic Forecast Outlook
             </h1>
+            {modelMode && (
+              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                modelMode === 'trained' ? 'bg-emerald-900/50 text-emerald-300 border-emerald-500/40' : 'bg-amber-900/50 text-amber-300 border-amber-500/40'
+              } border`}>
+                {modelMode.toUpperCase()}
+              </span>
+            )}
           </div>
           <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
             <MapPin className="h-3 w-3 text-sky-400" />

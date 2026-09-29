@@ -93,6 +93,14 @@ export const FarmerModePage = () => {
     setActiveTab,
     user
   } = useApp();
+  const [modelMode, setModelMode] = useState('heuristic');
+
+  useEffect(() => {
+    fetch('/api/model-card')
+      .then(r => r.json())
+      .then(data => setModelMode(data.model_mode || 'heuristic'))
+      .catch(() => setModelMode('heuristic'));
+  }, []);
 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [nowcastData, setNowcastData] = useState(null);
@@ -533,6 +541,13 @@ export const FarmerModePage = () => {
             <div>
               <h1 className="text-lg font-black tracking-tight leading-tight flex items-center gap-1.5 font-sans">
                 {t.appTitle || t.fmAppTitle || "Monsoon Saathi"}
+                {modelMode && (
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                    modelMode === 'trained' ? 'bg-emerald-900/50 text-emerald-300 border-emerald-500/40' : 'bg-amber-900/50 text-amber-300 border-amber-500/40'
+                  } border`}>
+                    {modelMode.toUpperCase()}
+                  </span>
+                )}
               </h1>
               <p className="text-xs text-emerald-100 font-medium flex items-center gap-1 mt-0.5">
                 <MapPin className="h-3.5 w-3.5 text-amber-300 flex-shrink-0" />

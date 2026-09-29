@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { fetchHistorical, fetchHistoricalML } from '../services/api';
+import { fetchHistorical, fetchHistoricalML, fetchValidationSummary, fetchModelCard } from '../services/api';
 import {
   ResponsiveContainer,
   BarChart,
@@ -20,6 +20,8 @@ export const HistoricalPage = () => {
   const { selectedLocationId, selectedBlock, selectedDistrict } = useApp();
   const [histData, setHistData] = useState(null);
   const [mlData, setMlData] = useState(null);
+  const [validationSummary, setValidationSummary] = useState(null);
+  const [modelCard, setModelCard] = useState(null);
 
   useEffect(() => {
     const loadHist = async () => {
@@ -36,6 +38,14 @@ export const HistoricalPage = () => {
         });
         if (ml?.status === 'success') setMlData(ml);
       }
+      
+      // Load validation summary and model card
+      const [valSummary, modelCard] = await Promise.all([
+        fetchValidationSummary(),
+        fetchModelCard()
+      ]);
+      if (valSummary) setValidationSummary(valSummary);
+      if (modelCard) setModelCard(modelCard);
     };
     loadHist();
   }, [selectedLocationId]);
@@ -71,8 +81,94 @@ export const HistoricalPage = () => {
         </div>
       </div>
 
+      {/* Model Validation Summary */}
+      {validationSummary && (
+        <div className="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 space-y-4 shadow-xl">
+          <div className="flex items-center gap-3">
+            <Activity className="h-6 w-6 text-emerald-400" />
+            <div>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                Model Validation Summary
+                {modelCard && modelCard.model_mode && (
+                  <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                    modelCard.model_mode === 'trained' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'
+                  }`}>
+                    {modelCard.model_mode.toUpperCase()}
+                  </span>
+                )}
+              </h2>
+              <p className="text-xs text-slate-400">
+                Skill metrics from leave-one-year-out CV + held-out test season
+              </p>
+            </div>
+          </div>
+          
+          {validationSummary.targets && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {Object.entries(validationSummary.targets).map(([target, metrics]) => (
+                <div key={target} className="rounded-xl bg-slate-950/60 border border-slate-800 p-3 space-y-1">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    {target.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                    <div className="text-slate-500">Brier Score</div>
+                    <div className="text-white font-mono font-bold">{metrics.brier_score?.toFixed ? metrics.brier_score.toFixed(4) : 'N/A'}</div>
+                    <div className="text-slate-500">BSS vs Clim</div>
+                    <div className={`text-white font-mono font-bold ${metrics.brier_skill_score > 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
+                      {metrics.brier_skill_score?.toFixed ? metrics.brier_skill_score.toFixed(4) : 'N/A'}
+                    </div>
+                    <div className="text-slate-500">ROC-AUC</div>
+                    <div className="text-white font-mono font-bold">{metrics.roc_auc?.toFixed ? metrics.roc_auc.toFixed(4) : 'N/A'}</div>
+                    <div className="text-slate-500">Hit Rate</div>
+                    <div className="text-white font-mono font-bold">{metrics.hit_rate?.toFixed ? metrics.hit_rate.toFixed(3) : 'N/A'}</div>
+                    <div className="text-slate-500">FAR</div>
+                    <div className="text-white font-mono font-bold">{metrics.false_alarm_ratio?.toFixed ? metrics.false_alarm_ratio.toFixed(3) : 'N/A'}</div>
+                    <div className="text-slate-500">Prevalence</div>
+                    <div className="text-white font-mono font-bold">{metrics.prevalence?.toFixed ? (metrics.prevalence * 100).toFixed(1) + '%' : 'N/A'}</div>
+                  </div>
+                  {metrics.bss_bootstrap_ci && (
+                    <div className="text-[9px] text-slate-500 border-t border-slate-800 pt-1.5">
+                      BSS 95% CI: [{metrics.bss_bootstrap_ci.ci_lower.toFixed(4)}, {metrics.bss_bootstrap_ci.ci_upper.toFixed(4)}]
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <div className="text-[10px] text-slate-500 border-t border-slate-800 pt-3 flex flex-wrap gap-4">
+            <span>Spatial: {validationSummary.spatial_unit || 'IMD 0.25° grid'}</span>
+            <span>Train: {validationSummary.train_years?.join(', ')}</span>
+            <span>Test: {validationSummary.test_years?.join(', ')}</span>
+            <span>Samples: {validationSummary.test_samples?.toLocaleString()}</span>
+          </div>
+        </div>
+      )}
+      
+      {/* Model Card Info */}
+      {modelCard && modelCard.training && (
+        <div className="rounded-2xl bg-indigo-950/40 border border-indigo-500/40 p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <Cpu className="h-5 w-5 text-indigo-300" />
+            <span className="text-xs font-bold text-indigo-200 uppercase tracking-wider">Model Card</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+            <div className="text-slate-400">Region</div>
+            <div className="text-white">{modelCard.training.region}</div>
+            <div className="text-slate-400">Resolution</div>
+            <div className="text-white">{modelCard.training.spatial_resolution}</div>
+            <div className="text-slate-400">Train Years</div>
+            <div className="text-white">{modelCard.training.train_years?.join(', ')}</div>
+            <div className="text-slate-400">Git Commit</div>
+            <div className="text-white font-mono">{modelCard.training.git_commit?.slice(0, 8)}</div>
+          </div>
+          <div className="text-[10px] text-slate-400">
+            Limitations: {modelCard.limitations?.join('; ')}
+          </div>
+        </div>
+      )}
+      
       {/* Historical Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Chart 1: Year vs Rainfall Anomaly */}
         <div className="rounded-2xl bg-slate-900/70 border border-slate-800 p-5 space-y-4 shadow-xl">

@@ -498,6 +498,30 @@ export const fetchSystemStatus = async () => {
   return null;
 };
 
+export const fetchValidationSummary = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/validation/summary`);
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Using fallback validation summary", err);
+  }
+  return null;
+};
+
+export const fetchModelCard = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/model-card`);
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("Using fallback model card", err);
+  }
+  return null;
+};
+
 export const fetchExplainability = async (payload, mode = 'basic') => {
   try {
     const url = mode === 'advanced' ? `${API_BASE_URL}/explain/advanced` : `${API_BASE_URL}/explain`;
