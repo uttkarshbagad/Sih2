@@ -32,16 +32,8 @@ const {
     forecastHorizon, 
     setForecastHorizon,
     forecastData 
-  } = useApp();
+} = useApp();
   const [activeMetric, setActiveMetric] = useState('all');
-  const [modelMode, setModelMode] = useState('heuristic');
-
-  useEffect(() => {
-    fetch('/api/model-card')
-      .then(r => r.json())
-      .then(data => setModelMode(data.model_mode || 'heuristic'))
-      .catch(() => setModelMode('heuristic'));
-  }, []);
   const [modelMode, setModelMode] = useState('heuristic');
 
   useEffect(() => {

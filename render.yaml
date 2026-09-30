@@ -1,0 +1,55 @@
+services:
+  # -------------------------------------------------------------
+  # 1. ML Microservice (Python FastAPI + Uvicorn)
+  # -------------------------------------------------------------
+  - type: web
+    name: monsoon-ml-service
+    env: python
+    rootDir: SIH/ml-service
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # -------------------------------------------------------------
+  # 2. Backend Gateway API (Node.js Express)
+  # -------------------------------------------------------------
+  - type: web
+    name: monsoon-backend-api
+    env: node
+    rootDir: SIH/backend
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.0.0
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ML_SERVICE_URL
+        fromService:
+          type: web
+          name: monsoon-ml-service
+          property: host
+      - key: MONGODB_URI
+        sync: false
+    autoDeploy: true
+
+  # -------------------------------------------------------------
+  # 3. Frontend Web App (React + Vite Static Site)
+  # -------------------------------------------------------------
+  - type: static
+    name: monsoon-frontend
+    rootDir: SIH/frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+    autoDeploy: true

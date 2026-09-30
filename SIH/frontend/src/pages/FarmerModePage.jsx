@@ -516,7 +516,7 @@ export const FarmerModePage = () => {
   };
 
   return (
-    <div className="flex-1 w-full min-w-0 min-h-screen overflow-y-auto bg-slate-950 relative">
+    <>
       {/* ambient full-width glow background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-emerald-600/15 blur-[100px]" />
@@ -1135,9 +1135,10 @@ export const FarmerModePage = () => {
 
           </div>
         </div>
-      )}
+)}
 
     </div>
+  </>
   );
 };
 
